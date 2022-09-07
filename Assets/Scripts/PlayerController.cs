@@ -13,12 +13,18 @@ public class PlayerController : MonoBehaviour
 {
     public int playerPositionControler;
     public Transform playerPosition;
+    public GameObject bullet;
+    public bool canShoot = true;
+    LifeController lc;
 
 
     // Start is called before the first frame update
     void Start()
     {
+        var lifeThing = GameObject.Find("lifeThing");
+        lc = lifeThing.GetComponent<LifeController>();
         playerPositionControler = 1;
+        StartCoroutine(Shoot());
     }
 
     // Update is called once per frame
@@ -30,36 +36,32 @@ public class PlayerController : MonoBehaviour
 
         newPos.y += yMove * Time.deltaTime * 7;
 
-        newPos.y = Mathf.Clamp(newPos.y, -2.7f, 3.4f);
+        newPos.y = Mathf.Clamp(newPos.y, -3.7f, 3.7f);
 
         transform.position = newPos;
 
-        
+        if (Input.GetKey(KeyCode.Space) && (canShoot))
+        {
+            Instantiate(bullet, playerPosition.position, playerPosition.rotation);
+            canShoot = false;
+        }
     }
 
-   /* IEnumerator PlayerMovement()
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (Input.GetKey(KeyCode.W))
+        if (collision.gameObject.name.Contains("enemy"))
         {
-            playerPositionControler++;
-            if (playerPositionControler > 6)
-            {
-                playerPositionControler = 6;
-            }
-            Debug.Log(playerPositionControler);
-            yield return new WaitForSeconds(0.1f);
+            lc.lives--;
         }
+    }
 
-        if (Input.GetKey(KeyCode.S))
+    IEnumerator Shoot()
+    {
+        while (true)
         {
-            playerPositionControler--;
-            if (playerPositionControler < 1)
-            {
-                playerPositionControler = 1;
-            }
-            Debug.Log(playerPositionControler);
-            yield return new WaitForSeconds(0.1f);
+           canShoot = true;
+           yield return new WaitForSeconds(0.5f);
         }
-        }*/
+    }
         
 }
